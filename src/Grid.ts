@@ -3,7 +3,7 @@ import { Door } from "./Door"
 import { Room } from "./Room"
 import { randInclusive } from "./utils"
 
-const WALL_SIZE = 1
+export const WALL_SIZE = 1
 
 export class Grid {
   width: number

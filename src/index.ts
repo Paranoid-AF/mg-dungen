@@ -10,3 +10,4 @@ grid.generateDoorHoles()
 // TODO: 将门插入到 grid 中
 
 printGrid(grid)
+console.log(`Placed ${grid.rooms.length} rooms, discarded ${rooms.length - grid.rooms.length} rooms.`)

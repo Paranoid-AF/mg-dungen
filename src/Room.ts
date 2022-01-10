@@ -1,6 +1,6 @@
 import { CellType } from './Cell'
 import { Door } from './Door'
-import { Grid } from './Grid'
+import { Grid, WALL_SIZE } from './Grid'
 import { randInclusive } from './utils'
 
 const ROOM_MIN = 2
@@ -72,15 +72,20 @@ export class Room {
   public drawInGrid() {
     // 如果房间没有被放置 (即位置在默认的 -1)，则跳过。
     if(this.x >= 0 && this.y >= 0) {
-      for(let i=-1; i<=this.width; i++) {
-        for(let j=-1; j<=this.height; j++) {
-          if(i < 0 || i === this.width || j < 0 || j === this.height) {
-            if(this.grid.cells[this.x + i][this.y + j].type === CellType.CELL_TYPE_EMPTY) {
-              this.grid.cells[this.x + i][this.y + j].type = CellType.CELL_TYPE_WALL
+      for(let i=-WALL_SIZE; i<this.width + WALL_SIZE; i++) {
+        for(let j=-WALL_SIZE; j<this.height + WALL_SIZE; j++) {
+          const cellX = this.x + i
+          const cellY = this.y + j
+          if(!this.grid.isInGrid(cellX, cellY)) {
+            continue
+          }
+          if(i < 0 || i >= this.width || j < 0 || j >= this.height) {
+            if(this.grid.cells[cellX][cellY].type === CellType.CELL_TYPE_EMPTY) {
+              this.grid.cells[cellX][cellY].type = CellType.CELL_TYPE_WALL
             }
           } else {
-            this.grid.cells[this.x + i][this.y + j].type = CellType.CELL_TYPE_ROOM
-            this.grid.cells[this.x + i][this.y + j].room = this
+            this.grid.cells[cellX][cellY].type = CellType.CELL_TYPE_ROOM
+            this.grid.cells[cellX][cellY].room = this
           }
         }
       }
