@@ -46,29 +46,6 @@ export class Room {
     }
   }
 
-  public addDoorHole(door: Door) {
-    if(!door.room1 || !door.room2) {
-      return
-    }
-    if(door.room2.doorHoles.has(door.room1)) {
-      const doors = door.room2.doorHoles.get(door.room1)
-      if(doors) {
-        doors.push(door)
-      }
-    } else {
-      door.room2.doorHoles.set(door.room1, [ door ])
-    }
-
-    if(door.room1.doorHoles.has(door.room2)) {
-      const doors = door.room1.doorHoles.get(door.room2)
-      if(doors) {
-        doors.push(door)
-      }
-    } else {
-      door.room1.doorHoles.set(door.room2, [ door ])
-    }
-  }
-
   public drawInGrid() {
     // 如果房间没有被放置 (即位置在默认的 -1)，则跳过。
     if(this.x >= 0 && this.y >= 0) {

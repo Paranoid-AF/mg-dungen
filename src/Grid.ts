@@ -165,19 +165,23 @@ export class Grid {
       const neighbor = this.cells[x + offsetX][y + offsetY]
       if(neighbor.type === CellType.CELL_TYPE_ROOM) {
         const neighborRoom = neighbor.room
-        if(neighborRoom && room.doorHoles.has(neighborRoom)) {
-          const existingDoorHoles = room.doorHoles.get(neighborRoom)
-          if(existingDoorHoles && existingDoorHoles.find(door => door.x === x && door.y === y)) {
-            return null
+        if(neighborRoom) {
+          // 如果有重复的门就忽略，避免同一个门在不同房间遍历时被添加两次。
+          if(room.doorHoles.has(neighborRoom)) {
+            const existingDoorHoles = room.doorHoles.get(neighborRoom)
+            if(existingDoorHoles && existingDoorHoles.find(door => door.x === x && door.y === y)) {
+              return null
+            }
           }
-        }
-        const door = new Door()
-        door.x = x
-        door.y = y
-        door.room1 = room
-        door.room2 = neighborRoom
+
+          const door = new Door()
+          door.x = x
+          door.y = y
   
-        return door
+          door.connectRooms(room, neighborRoom)
+          
+          return door
+        }
       }
     }
     return null
@@ -220,14 +224,18 @@ export class Grid {
         const top = this.buildDoorHole(room, x, topY - WALL_SIZE, 0, -1)
         const bottom = this.buildDoorHole(room, x, bottomY + WALL_SIZE, 0, 1)
         if(top) {
-          room.addDoorHole(top)
-          room.connectedEdges.top = true
-          top.getOtherRoom(room)!.connectedEdges.bottom = true
+          const otherRoom = top.getOtherRoom(room)
+          if(otherRoom) {
+            room.connectedEdges.top = true
+            otherRoom.connectedEdges.bottom = true
+          }
         }
         if(bottom) {
-          room.addDoorHole(bottom)
-          room.connectedEdges.bottom = true
-          bottom.getOtherRoom(room)!.connectedEdges.top = true
+          const otherRoom = bottom.getOtherRoom(room)
+          if(otherRoom) {
+            room.connectedEdges.bottom = true
+            otherRoom.connectedEdges.top = true
+          }
         }
       }
       // 垂直遍历墙壁，同上
@@ -238,14 +246,18 @@ export class Grid {
         const left = this.buildDoorHole(room, leftX - WALL_SIZE, y, -1, 0)
         const right = this.buildDoorHole(room, rightX + WALL_SIZE, y, 1, 0)
         if(left) {
-          room.addDoorHole(left)
-          room.connectedEdges.left = true
-          left.getOtherRoom(room)!.connectedEdges.right = true
+          const otherRoom = left.getOtherRoom(room)
+          if(otherRoom) {
+            room.connectedEdges.left = true
+            otherRoom.connectedEdges.right = true
+          }
         }
         if(right) {
-          room.addDoorHole(right)
-          room.connectedEdges.right = true
-          right.getOtherRoom(room)!.connectedEdges.left = true
+          const otherRoom = right.getOtherRoom(room)
+          if(otherRoom) {
+            room.connectedEdges.right = true
+            otherRoom.connectedEdges.left = true
+          }
         }
       }
     })
